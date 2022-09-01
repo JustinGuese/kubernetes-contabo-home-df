@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-argocd
+  namespace: argocd
+  annotations:
+  #   ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Robots-Tag: noindex, nofollow";
+    # basic auth with nginx
+    # nginx.ingress.kubernetes.io/auth-type: basic
+    # nginx.ingress.kubernetes.io/auth-secret: bwkube-auth
+    # letsencrypt certificate
+    cert-manager.io/cluster-issuer: "letsencrypt-dfcontabo" # "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+      - dfcicd.datafortress.cloud
+    secretName: letsencrypt-dfcontabo
+  rules:
+  - host: "dfcicd.datafortress.cloud"
+    http:
+      paths:
+        - path: "/" # wildcard for now
+          pathType: Prefix
+          backend:
+            service:
+              name: argocd-server
+              port:
+                number: 8080
