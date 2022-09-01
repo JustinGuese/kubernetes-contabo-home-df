@@ -20,7 +20,7 @@ spec:
         app: redis-app
     spec:
       containers:
-        - image: redis:latest-alpine
+        - image: redis:alpine
           imagePullPolicy: Always
           name: redis-app
           ports:
