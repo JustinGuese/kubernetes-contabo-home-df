@@ -37,7 +37,7 @@ spec:
       containers:
         - env:
             - name: WORDPRESS_DB_HOST
-              value: mariadb-service.wordpressdb.svc.cluster.local
+              value: mariadb-service.wordpressdb.svc.cluster.local:3306
             - name: WORDPRESS_DB_USER
               value: bildblatt
             - name: WORDPRESS_DB_NAME
