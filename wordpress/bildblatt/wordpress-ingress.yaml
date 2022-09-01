@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-wordpress
+  namespace: wordpress-bildblatt
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/enable-cors: "true"
+    # nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    # nginx.ingress.kubernetes.io/configuration-snippet: |
+    #   more_set_headers "X-Robots-Tag: noindex, nofollow";
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - bildblatt.de
+    - piconleaf.com
+    secretName: tls-secret
+  rules:
+  - host: "bildblatt.de"
+    http:
+      paths:
+        - path: "/" # wildcard for now
+          pathType: Prefix
+          backend:
+            service:
+              name: wordpressbildblatt-de-service
+              port:
+                number: 80
+  - host: "piconleaf.com"
+    http:
+      paths:
+        - path: "/" # wildcard for now
+          pathType: Prefix
+          backend:
+            service:
+              name: wordpressbildblatt-en-service
+              port:
+                number: 80
