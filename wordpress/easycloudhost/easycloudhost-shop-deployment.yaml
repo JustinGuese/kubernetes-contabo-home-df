@@ -2,9 +2,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app: wordpressbildblatt-de
-  name: wordpressbildblatt-de-pvc
-  namespace: wordpress-bildblatt
+    app: easycloudhost-shop
+  name: easycloudhost-shop-pvc
+  namespace: wordpress-easycloudhost
 spec:
   accessModes:
     - ReadWriteOnce
@@ -17,22 +17,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: wordpressbildblatt-de-app
-  name: wordpressbildblatt-de-app
-  namespace: wordpress-bildblatt
+    app: easycloudhost-shop-app
+  name: easycloudhost-shop-app
+  namespace: wordpress-easycloudhost
   annotations:
-    backup.velero.io/backup-volumes: wordpressbildblatt-de-pv
+    backup.velero.io/backup-volumes: easycloudhost-shop-pv
 spec:
   strategy:
     type: RollingUpdate
   replicas: 1
   selector:
     matchLabels:
-      app: wordpressbildblatt-de-app
+      app: easycloudhost-shop-app
   template:
     metadata:
       labels:
-        app: wordpressbildblatt-de-app
+        app: easycloudhost-shop-app
     spec:
       containers:
         # redis is at redis-service.wordpressdb.svc.cluster.local
@@ -40,17 +40,17 @@ spec:
             - name: WORDPRESS_DB_HOST
               value: mariadb-service.wordpressdb.svc.cluster.local
             - name: WORDPRESS_DB_USER
-              value: bildblatt
+              value: easycloudhost
             - name: WORDPRESS_DB_NAME
-              value: wordpress_bildblatt_de
+              value: wordpress_easycloudhost
             - name: WORDPRESS_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: wordpresspw
+                  name: easycloudhostwppw 
                   key: MARIADB_PASSWORD
           image: wordpress:latest
           imagePullPolicy: Always
-          name: wordpressbildblatt-de-app
+          name: easycloudhost-shop-app
           ports:
             - containerPort: 80
           resources:
@@ -62,25 +62,25 @@ spec:
               cpu: 1000m
           volumeMounts:
             - mountPath: /var/www/html
-              name: wordpressbildblatt-de-pv
+              name: easycloudhost-shop-pv
       restartPolicy: Always
       volumes:
-        - name: wordpressbildblatt-de-pv
+        - name: easycloudhost-shop-pv
           persistentVolumeClaim:
-            claimName: wordpressbildblatt-de-pvc
+            claimName: easycloudhost-shop-pvc
 status: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: wordpressbildblatt-de
-  name: wordpressbildblatt-de-service
-  namespace: wordpress-bildblatt
+    app: easycloudhost-shop
+  name: easycloudhost-shop-service
+  namespace: wordpress-easycloudhost
 spec:
   ports:
-    - name: "wordpressbildblatt-de-service"
+    - name: "easycloudhost-shop-service"
       port: 80
       targetPort: 80
   selector:
-    app: wordpressbildblatt-de-app
+    app: easycloudhost-shop-app

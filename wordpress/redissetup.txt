@@ -1,0 +1,6 @@
+define( 'WP_CACHE_KEY_SALT', 'example.com:' );
+
+define( 'WP_REDIS_PASSWORD', 'redispassword' );
+
+
+and then install redis plugin

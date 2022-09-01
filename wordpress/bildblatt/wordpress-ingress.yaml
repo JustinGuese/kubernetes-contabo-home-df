@@ -16,6 +16,7 @@ spec:
   - hosts:
     - bildblatt.de
     - piconleaf.com
+    - shop.easycloudhost.de
     secretName: tls-secret
   rules:
   - host: "bildblatt.de"
@@ -36,5 +37,15 @@ spec:
           backend:
             service:
               name: wordpressbildblatt-en-service
+              port:
+                number: 80
+  - host: "shop.easycloudhost.de"
+    http:
+      paths:
+        - path: "/" # wildcard for now
+          pathType: Prefix
+          backend:
+            service:
+              name: easycloudhost-shop-service
               port:
                 number: 80
