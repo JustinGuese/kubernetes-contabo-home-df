@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-wordpress-bildblatt
-  namespace: wordpress-bildblatt
+  name: ingress-wordpress-easycloudhost
+  namespace: wordpress-easycloudhost
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -14,27 +14,16 @@ metadata:
 spec:
   tls:
   - hosts:
-    - bildblatt.de
-    - piconleaf.com
+    - shop.easycloudhost.de
     secretName: tls-secret
   rules:
-  - host: "bildblatt.de"
+  - host: "shop.easycloudhost.de"
     http:
       paths:
         - path: "/" # wildcard for now
           pathType: Prefix
           backend:
             service:
-              name: wordpressbildblatt-de-service
-              port:
-                number: 80
-  - host: "piconleaf.com"
-    http:
-      paths:
-        - path: "/" # wildcard for now
-          pathType: Prefix
-          backend:
-            service:
-              name: wordpressbildblatt-en-service
+              name: easycloudhost-shop-service
               port:
                 number: 80
