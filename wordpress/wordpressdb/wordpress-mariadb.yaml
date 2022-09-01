@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: mariadb
+  name: mariadb-pvc
+  namespace: wordpressdb
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mariadb-app
+  name: mariadb-app
+  namespace: wordpressdb
+  annotations:
+    backup.velero.io/backup-volumes: mariadb-pv
+spec:
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb-app
+  template:
+    metadata:
+      labels:
+        app: mariadb-app
+    spec:
+      containers:
+        - env:
+            - name: MARIADB_DATABASE
+              value: wordpress
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpressmariadbpw 
+                  key: MARIADB_PASSWORD
+          image: mariadb:latest
+          imagePullPolicy: Always
+          name: mariadb-app
+          ports:
+            - containerPort: 3306
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: 128m
+            limits:
+              memory: "1Gi"
+              cpu: 1000m
+          volumeMounts:
+            - mountPath: /var/lib/mysql/
+              name: mariadb-pv
+      restartPolicy: Always
+      volumes:
+        - name: mariadb-pv
+          persistentVolumeClaim:
+            claimName: mariadb-pvc
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mariadb
+  name: mariadb-service
+  namespace: wordpressdb
+spec:
+  ports:
+    - name: "mariadb-service"
+      port: 3306
+      targetPort: 3306
+  selector:
+    app: mariadb-app

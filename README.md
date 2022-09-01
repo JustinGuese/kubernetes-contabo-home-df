@@ -26,3 +26,18 @@ kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 
+### 3. sealed secrets
+
+```
+helm install sealed-secrets -n kube-system --set-string fullnameOverride=sealed-secrets-controller sealed-secrets/sealed-secrets 
+```
+
+kubectl create secret generic secret-name --dry-run=client --from-literal=foo=bar -o [json|yaml] | \
+    kubeseal \
+      --controller-name=sealed-secrets-controller \
+      --controller-namespace=kube-system \
+      --format [json|yaml] --cert mycert.pem > mysealedsecret.[json|yaml]
+
+3. Apply the sealed secret
+
+    kubectl create -f mysealedsecret.[json|yaml]
