@@ -1,26 +1,20 @@
 # kubernetes-contabo-home-df
 
 IP: 161.97.78.147
-
+https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
 
 ## install
 
-### 1. nginx ingress
-
-https://kubernetes.github.io/ingress-nginx/deploy/#quick-start
-
-```
-helm upgrade --install ingress-nginx ingress-nginx \
-  --repo https://kubernetes.github.io/ingress-nginx \
-  --namespace ingress-nginx --create-namespace
-```
-
-### 2. cert manager
+### 1. cert manager
 
 https://cert-manager.io/docs/installation/
 
 ```
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
+helm install \
+        cert-manager jetstack/cert-manager \
+        --namespace cert-manager \
+        --create-namespace \
+        --set installCRDs=true
 kubectl apply -f ingress/df-clusterissuer.yaml
 
 ```
