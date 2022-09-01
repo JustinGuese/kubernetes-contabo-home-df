@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: wordpressbildblatt-de
+  name: wordpressbildblatt-de-pvc
+  namespace: wordpress-bildblatt
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wordpressbildblatt-de-app
+  name: wordpressbildblatt-de-app
+  namespace: wordpress-bildblatt
+  annotations:
+    backup.velero.io/backup-volumes: wordpressbildblatt-de-pv
+spec:
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpressbildblatt-de-app
+  template:
+    metadata:
+      labels:
+        app: wordpressbildblatt-de-app
+    spec:
+      containers:
+        - env:
+            - name: WORDPRESS_DB_HOST
+              value: mariadb-service.wordpressdb.svc.cluster.local
+            - name: WORDPRESS_DB_USER
+              value: root
+            - name: WORDPRESS_DB_USER
+              value: root
+            - name: WORDPRESS_DB_NAME
+              value: wp_bildblatt_de
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpresspw
+                  key: MARIADB_PASSWORD
+          image: wordpress:latest
+          imagePullPolicy: Always
+          name: wordpressbildblatt-de-app
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: 128m
+            limits:
+              memory: "1Gi"
+              cpu: 1000m
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: wordpressbildblatt-de-pv
+      restartPolicy: Always
+      volumes:
+        - name: wordpressbildblatt-de-pv
+          persistentVolumeClaim:
+            claimName: wordpressbildblatt-de-pvc
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: wordpressbildblatt-de
+  name: wordpressbildblatt-de-service
+  namespace: wordpress-bildblatt
+spec:
+  ports:
+    - name: "wordpressbildblatt-de-service"
+      port: 80
+      targetPort: 80
+  selector:
+    app: wordpressbildblatt-de-app
