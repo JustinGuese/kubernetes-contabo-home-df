@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redis-app
+  name: redis-app
+  namespace: wordpressdb
+  # annotations:
+  #   backup.velero.io/backup-volumes: redis-pv
+spec:
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-app
+  template:
+    metadata:
+      labels:
+        app: redis-app
+    spec:
+      containers:
+        - image: redis:latest-alpine
+          imagePullPolicy: Always
+          name: redis-app
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: 128m
+            limits:
+              memory: "500Mi"
+              cpu: 1000m
+          # volumeMounts:
+            # - mountPath: /var/lib/mysql/
+            #   name: redis-pv
+      restartPolicy: Always
+      # volumes:
+      #   - name: redis-pv
+      #     persistentVolumeClaim:
+      #       claimName: redis-pvc
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: redis
+  name: redis-service
+  namespace: wordpressdb
+spec:
+  ports:
+    - name: "redis-service"
+      port: 6379
+      targetPort: 6379
+  selector:
+    app: redis-app
