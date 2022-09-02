@@ -41,3 +41,44 @@ kubectl create secret generic secret-name --dry-run=client --from-literal=foo=ba
 3. Apply the sealed secret
 
     kubectl create -f mysealedsecret.[json|yaml]
+
+### 4. velero backups
+
+https://github.com/vmware-tanzu/velero-plugin-for-aws
+
+dfcontabo-kubernetes-backups-velero
+
+`nano cloudcreds`
+
+```
+[default]
+aws_access_key_id=<AWS_ACCESS_KEY_ID>
+aws_secret_access_key=<AWS_SECRET_ACCESS_KEY>
+```
+
+```
+velero install \
+  --provider velero.io/aws \
+  --bucket dfcontabo-kubernetes-backups-velero \
+  --plugins velero/velero-plugin-for-aws:v1.4.0 \
+  --backup-location-config region=eu-central-1 \
+  --snapshot-location-config region=eu-central-1 \
+  --secret-file ./cloudcreds
+```
+
+make annotations for volumes in deployments
+annotations:
+    backup.velero.io/backup-volumes: mariadb-pv
+
+schedule:
+
+`velero create schedule bidaily-wordpress-backup --schedule="0 2 * * */2" --include-namespaces wordpressdb,wordpress-easycloudhost,wordpress-bildblatt`
+
+To show all stored backups list (name, status, creation and expiration date)
+$ velero get backups
+
+restore
+velero restore create --from-backup backup_name
+
+# To show one specific backup details
+$ velero describe backup backup_name
