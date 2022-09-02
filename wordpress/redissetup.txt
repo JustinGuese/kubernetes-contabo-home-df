@@ -1,5 +1,5 @@
 define( 'WP_CACHE_KEY_SALT', 'example.com:' );
-
+define( 'WP_CACHE', true);
 define( 'WP_REDIS_HOST', 'redis-service.wordpressdb.svc.cluster.local' );
 
 

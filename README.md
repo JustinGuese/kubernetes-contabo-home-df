@@ -72,7 +72,7 @@ annotations:
 
 schedule:
 
-`velero create schedule bidaily-wordpress-backup --schedule="0 2 * * */2" --include-namespaces wordpressdb,wordpress-easycloudhost,wordpress-bildblatt`
+`velero create schedule bidaily-wordpress-backup --schedule="0 2 * * */2" --include-namespaces wordpressdb,wordpress-easycloudhost,wordpress-bildblatt,wordpress-aipaints`
 
 To show all stored backups list (name, status, creation and expiration date)
 $ velero get backups
