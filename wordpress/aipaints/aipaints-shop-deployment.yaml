@@ -2,9 +2,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app: easycloudhost-shop
-  name: easycloudhost-shop-pvc
-  namespace: wordpress-easycloudhost
+    app: aipaints
+  name: aipaints-pvc
+  namespace: wordpress-aipaints
 spec:
   accessModes:
     - ReadWriteOnce
@@ -17,22 +17,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: easycloudhost-shop-app
-  name: easycloudhost-shop-app
-  namespace: wordpress-easycloudhost
+    app: aipaints-app
+  name: aipaints-app
+  namespace: wordpress-aipaints
   annotations:
-    backup.velero.io/backup-volumes: easycloudhost-shop-pv
+    backup.velero.io/backup-volumes: aipaints-pv
 spec:
   strategy:
     type: RollingUpdate
   replicas: 1
   selector:
     matchLabels:
-      app: easycloudhost-shop-app
+      app: aipaints-app
   template:
     metadata:
       labels:
-        app: easycloudhost-shop-app
+        app: aipaints-app
     spec:
       containers:
         # redis is at redis-service.wordpressdb.svc.cluster.local
@@ -40,17 +40,17 @@ spec:
             - name: WORDPRESS_DB_HOST
               value: mariadb-service.wordpressdb.svc.cluster.local
             - name: WORDPRESS_DB_USER
-              value: easycloudhost
+              value: aipaints
             - name: WORDPRESS_DB_NAME
-              value: wordpress_easycloudhost
+              value: wordpress_aipaints
             - name: WORDPRESS_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: easycloudhostwppw 
+                  name: aipaintswppw 
                   key: MARIADB_PASSWORD
           image: wordpress:latest
           imagePullPolicy: Always
-          name: easycloudhost-shop-app
+          name: aipaints-app
           ports:
             - containerPort: 80
           resources:
@@ -62,25 +62,25 @@ spec:
               cpu: 1000m
           volumeMounts:
             - mountPath: /var/www/html
-              name: easycloudhost-shop-pv
+              name: aipaints-pv
       restartPolicy: Always
       volumes:
-        - name: easycloudhost-shop-pv
+        - name: aipaints-pv
           persistentVolumeClaim:
-            claimName: easycloudhost-shop-pvc
+            claimName: aipaints-pvc
 status: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: easycloudhost-shop
-  name: easycloudhost-shop-service
-  namespace: wordpress-easycloudhost
+    app: aipaints
+  name: aipaints-service
+  namespace: wordpress-aipaints
 spec:
   ports:
-    - name: "easycloudhost-shop-service"
+    - name: "aipaints-service"
       port: 80
       targetPort: 80
   selector:
-    app: easycloudhost-shop-app
+    app: aipaints-app
