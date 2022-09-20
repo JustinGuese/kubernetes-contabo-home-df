@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-gitlab
+  namespace: gitlab
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/enable-cors: "true"
+    # nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    # nginx.ingress.kubernetes.io/configuration-snippet: |
+    #   more_set_headers "X-Robots-Tag: noindex, nofollow";
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - gitlab.datafortress.cloud
+    secretName: tls-secret
+  rules:
+  - host: "gitlab.datafortress.cloud"
+    http:
+      paths:
+        - path: "/" # wildcard for now
+          pathType: Prefix
+          backend:
+            service:
+              name: gitlab
+              port:
+                number: 80

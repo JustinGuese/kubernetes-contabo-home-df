@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: gitlab
+  name: gitlab
+  namespace: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: gitlab
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (a9d05d509)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: gitlab
+    spec:
+      containers:
+        - image: gitlab/gitlab-ce:latest
+          name: gitlab
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/gitlab
+              name: gitlab-config
+            - mountPath: /var/log/gitlab
+              name: gitlab-logs
+            - mountPath: /var/opt/gitlab
+              name: gitlab-data
+          env:
+            - name: GITLAB_OMNIBUS_CONFIG
+              value: "external_url 'https://gitlab.datafortress.cloud'"
+      # hostname: gitlab.datafortress.cloud
+      restartPolicy: Always
+      volumes:
+        - name: gitlab-config
+          persistentVolumeClaim:
+            claimName: gitlab-config
+        - name: gitlab-logs
+          persistentVolumeClaim:
+            claimName: gitlab-logs
+        - name: gitlab-data
+          persistentVolumeClaim:
+            claimName: gitlab-data
+status: {}

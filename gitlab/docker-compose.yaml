@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+  gitlab:
+    ports:
+        - '80:80'
+        - '443:443'
+        # - '22:22'
+    volumes:
+        # - /var/run/docker.sudo
+        - 'gitlab-config:/etc/gitlab'
+        - 'gitlab-logs:/var/log/gitlab'
+        - 'gitlab-data:/var/opt/gitlab'
+    hostname: gitlab.datafortress.cloud
+    container_name: gitlab
+    # restart: 'always,always'
+    logging:
+        options:
+            max-size: 1g
+    image: gitlab/gitlab-ee:latest
+    
+  gitlab-runner:
+    image: gitlab/gitlab-runner:alpine
+
+volumes:
+    gitlab-config:
+    gitlab-logs:
+    gitlab-data:
