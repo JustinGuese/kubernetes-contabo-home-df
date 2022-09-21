@@ -1,6 +1,9 @@
 # kubernetes-contabo-home-df
 
 IP: 161.97.78.147
+IP Homeserver: 93.104.55.161
+
+
 https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
 
 ## install
