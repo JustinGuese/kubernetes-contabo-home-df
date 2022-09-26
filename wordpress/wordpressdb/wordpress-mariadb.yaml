@@ -38,6 +38,8 @@ spec:
         - env:
             - name: MARIADB_DATABASE
               value: wordpress
+            - name: MARIADB_USERNAME
+              value: root
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
