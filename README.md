@@ -76,6 +76,15 @@ aws_secret_access_key=<AWS_SECRET_ACCESS_KEY>
 
 ```
 velero install \
+--use-restic \
+--provider velero.io/aws \
+--plugins velero/velero-plugin-for-aws:v1.4.0 \
+--bucket dfhome-kubernetes-backups-velero \
+--secret-file ./cloudcreds \
+--backup-location-config region=eu-central-003,s3ForcePathStyle="true",s3Url=https://s3.eu-central-003.backblazeb2.com,region=eu-central-003 \
+--snapshot-location-config region=eu-central-003
+
+velero install \
   --provider velero.io/aws \
   --bucket dfhome-kubernetes-backups-velero \
   --plugins velero/velero-plugin-for-aws:v1.4.0 \
@@ -85,6 +94,9 @@ velero install \
   --backup-location-config \
       s3Url=https://s3.eu-central-003.backblazeb2.com,region=eu-central-003 \
   --secret-file ./cloudcreds
+
+# microk8s specific
+kubectl -n velero patch daemonset.apps/restic --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/volumes/0/hostPath/path", "value":"/var/snap/microk8s/common/var/lib/kubelet/pods"}]' 
 ```
   <!-- --snapshot-location-config region=eu-central-1 \ -->
 
