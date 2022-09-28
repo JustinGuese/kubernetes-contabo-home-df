@@ -1,6 +1,7 @@
 # kubernetes-contabo-home-df
 
-IP: 161.97.78.147
+IP: 195.88.87.230
+161.97.78.147
 IP Homeserver: 93.104.55.161
 
 
@@ -130,3 +131,6 @@ velero restore create --from-backup backup_name
 $ velero describe backup backup_name
 
 
+# observability
+
+(user/pass: admin/prom-operator)
