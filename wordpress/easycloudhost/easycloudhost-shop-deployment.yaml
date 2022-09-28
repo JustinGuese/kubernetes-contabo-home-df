@@ -20,6 +20,8 @@ metadata:
     app: easycloudhost-shop-app
   name: easycloudhost-shop-app
   namespace: wordpress-easycloudhost
+  annotations:
+    backup.velero.io/backup-volumes: easycloudhost-shop-pv,easycloudhost-shop-pvc
 spec:
   strategy:
     type: RollingUpdate
@@ -32,7 +34,7 @@ spec:
       labels:
         app: easycloudhost-shop-app
       annotations:
-        backup.velero.io/backup-volumes: easycloudhost-shop-pv
+        backup.velero.io/backup-volumes: easycloudhost-shop-pv,easycloudhost-shop-pvc
     spec:
       containers:
         # redis is at redis-service.wordpressdb.svc.cluster.local

@@ -1,7 +1,7 @@
 # kubernetes-contabo-home-df
 
 IP: 195.88.87.230
-161.97.78.147
+old contabo: 161.97.78.147
 IP Homeserver: 93.104.55.161
 
 
@@ -12,36 +12,11 @@ https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
 ```
 sudo snap install microk8s --classic --channel=latest/stable
 microk8s start
-microk8s enable dns ingress metrics-server rbac
+microk8s enable dns ingress metrics-server rbac hostpath-storage
 microk8s config show
 ```
 
 edit kubeconfig acccordingly
-
-### NFS setup
-
-https://microk8s.io/docs/nfs
-
-/srv/nfs
-
-```
-sudo apt-get install nfs-kernel-server
-sudo mkdir -p /srv/nfs
-sudo chown nobody:nogroup /srv/nfs
-sudo chmod 0777 /srv/nfs
-# export setup
-sudo mv /etc/exports /etc/exports.bak
-echo '/srv/nfs/* 192.168.178.0/24(rw,sync,no_subtree_check,no_root_squash)' | sudo tee /etc/exports
-sudo systemctl restart nfs-kernel-server
-# host
-helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
-helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs \
-    --namespace kube-system \
-    --set kubeletDir=/var/snap/microk8s/common/var/lib/kubelet
-kubectl apply -f nfs-csi/nfs-storageclass.yaml
-# switching from an old storageclass to a new one during restore
-kubectl apply -f nfs-csi/velero-switch-storage-class.yaml
-```
 
 
 
@@ -125,6 +100,8 @@ schedule:
 
 `velero create schedule bidaily-wordpress-backup --schedule="0 2 * * */2" --include-namespaces wordpressdb,wordpress-easycloudhost,wordpress-bildblatt,wordpress-aipaints`
 
+velero schedule create fullbackup --schedule="1 2 * * */3" # alle 7 tache
+
 To show all stored backups list (name, status, creation and expiration date)
 $ velero get backups
 
@@ -138,3 +115,29 @@ $ velero describe backup backup_name
 # observability
 
 (user/pass: admin/prom-operator)
+
+### (disabled for now) NFS setup
+
+https://microk8s.io/docs/nfs
+
+/srv/nfs
+
+```
+sudo apt-get install nfs-kernel-server
+sudo mkdir -p /srv/nfs
+sudo chown nobody:nogroup /srv/nfs
+sudo chmod 0777 /srv/nfs
+# export setup
+sudo mv /etc/exports /etc/exports.bak
+echo '/srv/nfs/* 192.168.178.0/24(rw,sync,no_subtree_check,no_root_squash)' | sudo tee /etc/exports
+sudo systemctl restart nfs-kernel-server
+# host
+helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs \
+    --namespace kube-system \
+    --set kubeletDir=/var/snap/microk8s/common/var/lib/kubelet
+kubectl apply -f nfs-csi/nfs-storageclass.yaml
+# switching from an old storageclass to a new one during restore
+kubectl apply -f nfs-csi/velero-switch-storage-class.yaml
+```
+

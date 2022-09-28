@@ -18,6 +18,8 @@ kind: Deployment
 metadata:
   labels:
     app: mariadb-app
+  annotations:
+    backup.velero.io/backup-volumes: mariadb-pv,mariadb-pvc
   name: mariadb-app
   namespace: wordpressdb
 spec:
@@ -32,7 +34,7 @@ spec:
       labels:
         app: mariadb-app
       annotations:
-        backup.velero.io/backup-volumes: mariadb-pv
+        backup.velero.io/backup-volumes: mariadb-pv,mariadb-pvc
     spec:
       containers:
         - env:
