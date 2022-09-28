@@ -20,8 +20,6 @@ metadata:
     app: mariadb-app
   name: mariadb-app
   namespace: wordpressdb
-  annotations:
-    backup.velero.io/backup-volumes: mariadb-pv
 spec:
   strategy:
     type: RollingUpdate
@@ -33,6 +31,8 @@ spec:
     metadata:
       labels:
         app: mariadb-app
+      annotations:
+        backup.velero.io/backup-volumes: mariadb-pv
     spec:
       containers:
         - env:

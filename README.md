@@ -113,6 +113,10 @@ velero install \
 ```
   <!-- --snapshot-location-config region=eu-central-1 \ -->
 
+```
+kubectl -n velero patch daemonset.apps/restic --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/volumes/0/hostPath/path", "value":"/var/snap/microk8s/common/var/lib/kubelet/pods"}]'
+```
+
 make annotations for volumes in deployments
 annotations:
     backup.velero.io/backup-volumes: mariadb-pv
