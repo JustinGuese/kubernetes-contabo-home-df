@@ -5,6 +5,7 @@ IP: 195.88.87.230
 old contabo: 161.97.78.147
 IP Homeserver: 93.104.55.161
 
+ssh root@195.88.87.230 -p 223
 
 https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
 
@@ -75,10 +76,17 @@ aws_access_key_id=<AWS_ACCESS_KEY_ID>
 aws_secret_access_key=<AWS_SECRET_ACCESS_KEY>
 ```
 
+**apparently only works with openebs!!**
+
+microk8s enable openebs
+
+kubectl patch storageclass openebs-hostpath -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
 ```
 velero install \
---provider velero.io/aws \
---plugins velero/velero-plugin-for-aws:v1.4.0 \
+--use-restic \
+--provider aws \
+--plugins velero/velero-plugin-for-aws \
 --bucket dfhome-kubernetes-backups-velero \
 --secret-file ./cloudcreds \
 --backup-location-config region=eu-central-003,s3ForcePathStyle="true",s3Url=https://s3.eu-central-003.backblazeb2.com,region=eu-central-003 \
@@ -110,7 +118,7 @@ annotations:
 
 schedule:
 
-`velero create schedule bidaily-wordpress-backup --schedule="0 2 * * */2" --include-namespaces wordpressdb,wordpress-easycloudhost,wordpress-bildblatt,wordpress-aipaints`
+`velero create schedule bidaily-backup --schedule="0 2 * * */2" --exclude-namespaces openebs,velero,kube-system`
 
 velero schedule create fullbackup --schedule="1 2 * * */3" # alle 7 tache
 
@@ -118,6 +126,9 @@ To show all stored backups list (name, status, creation and expiration date)
 $ velero get backups
 
 restore
+
+**restore is nondestructive, meaning you need to delete the PV before**
+
 velero restore create --from-backup backup_name
 
 # To show one specific backup details
@@ -153,3 +164,27 @@ kubectl apply -f nfs-csi/nfs-storageclass.yaml
 kubectl apply -f nfs-csi/velero-switch-storage-class.yaml
 ```
 
+# hardening the server
+
+## ufw
+
+```
+sudo ufw default allow outgoing
+sudo ufw default deny incoming
+# ssh, https
+sudo ufw allow http
+sudo ufw allow https
+sudo ufw allow 223 # ssh
+# microk8s
+sudo ufw allow 16443
+sudo ufw allow 10250
+sudo ufw allow 10255
+sudo ufw allow 25000
+sudo ufw allow 12379
+sudo ufw allow 10257
+sudo ufw allow 10259
+sudo ufw allow 19001
+sudo ufw allow 4789/udp
+
+sudo ufw enable
+```

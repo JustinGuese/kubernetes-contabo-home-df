@@ -22,4 +22,5 @@ data:
   # class name.
   # microk8s-hostpath: nfs-csi
   # microk8s-hostpath: standard
-  microk8s-hostpath: openebs-hostpath
+  # microk8s-hostpath: openebs-hostpath
+  openebs-hostpath: local-path
