@@ -1,6 +1,7 @@
 # kubernetes-contabo-home-df
 
 IP: 195.88.87.230
+2a02:c206:3009:9907::1
 old contabo: 161.97.78.147
 IP Homeserver: 93.104.55.161
 
@@ -76,7 +77,6 @@ aws_secret_access_key=<AWS_SECRET_ACCESS_KEY>
 
 ```
 velero install \
---use-restic \
 --provider velero.io/aws \
 --plugins velero/velero-plugin-for-aws:v1.4.0 \
 --bucket dfhome-kubernetes-backups-velero \

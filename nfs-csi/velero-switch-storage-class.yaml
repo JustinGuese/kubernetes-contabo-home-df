@@ -21,4 +21,5 @@ data:
   # storage class name and the value is the new storage
   # class name.
   # microk8s-hostpath: nfs-csi
-  microk8s-hostpath: standard
+  # microk8s-hostpath: standard
+  microk8s-hostpath: openebs-hostpath
