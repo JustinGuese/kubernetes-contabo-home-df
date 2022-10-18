@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: storagenode
+  name: storagenode
+  namespace: storj
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: storagenode
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        service: storagenode
+    spec:
+      containers:
+        - env:
+            - name: ADDRESS
+              value: 195.88.87.230:31008
+            - name: BANDWIDTH
+              value: 30TB
+            - name: EMAIL
+              value: guese.justin@gmail.com
+            - name: STORAGE
+              value: 50GB
+            - name: STORJ_LOG_LEVEL
+              value: info
+            - name: WALLET
+              value: "0x00cb28C0dd07f9277C724E525f895f45b42B6ad7"
+          image: storjlabs/storagenode:latest
+          name: storagenode
+          ports:
+            - containerPort: 28967
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/identity
+              name: storj-identity
+              readOnly: true
+            - mountPath: /app/config
+              name: storj-config
+      imagePullPolicy: Always
+      initContainers:
+        - name: storj-init
+          image: storjlabs/storagenode:latest
+          env:
+            - name: SETUP
+              value: "true"
+          volumeMounts:
+            - mountPath: /app/identity
+              name: storj-identity
+              readOnly: true
+            - mountPath: /app/config
+              name: storj-config
+      restartPolicy: Always
+      volumes:
+        - name: storj-identity
+          secret: 
+            secretName: storj
+            items:
+              - key: identity.cert
+                path: identity.cert
+              - key: identity.key
+                path: identity.key
+              - key: ca.cert
+                path: ca.cert
+              - key: ca.key
+                path: ca.key
+        - name: storj-config
+          hostPath:
+            path: /root/storjdata
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  labels:
+    service: storagenode
+  name: storagenode
+  namespace: storj
+spec:
+  type: NodePort
+  ports:
+    - name: "storj"
+      port: 28967
+      targetPort: 28967
+      nodePort: 31008
+  selector:
+    service: storagenode

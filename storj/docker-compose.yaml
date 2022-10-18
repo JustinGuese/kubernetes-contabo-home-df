@@ -1,0 +1,17 @@
+version: '3'
+services:
+  storagenode:
+    image: storjlabs/storagenode:beta
+    restart: unless-stopped
+    ports:
+        - 28967:28967
+    volumes:
+        - storj-identity:/app/identity
+        - storj-config:/app/config
+    environment:
+        - WALLET=0x123456789
+        - EMAIL=guese.justin@gmail.com
+        - ADDRESS=195.88.87.230:28967
+        - BANDWIDTH=10TB
+        - STORAGE=1TB
+        - STORJ_LOG_LEVEL=info
