@@ -20,3 +20,21 @@ ca.cert:        558 bytes
 ca.key:         241 bytes
 identity.cert:  1096 bytes
 ```
+
+
+Dont forget to enable ufw portforward etc 31008, 28967
+
+## simple docker run
+
+docker run -d --restart unless-stopped --stop-timeout 300 \
+    -p 28967:28967/tcp \
+    -p 28967:28967/udp \
+    -p 14002:14002 \
+    -e WALLET="0x00cb28C0dd07f9277C724E525f895f45b42B6ad7" \
+    -e EMAIL="guese.justin@gmail.com" \
+    -e ADDRESS="datafortress.duckdns.org:28967" \
+    -e STORAGE="2TB" \
+    --user $(id -u):$(id -g) \
+    --mount type=bind,source="/home/df/.local/share/storj/identity/storagenode",destination=/app/identity \
+    --mount type=bind,source="/mnt/hdd/storj/",destination=/app/config \
+    --name storagenode storjlabs/storagenode:latest

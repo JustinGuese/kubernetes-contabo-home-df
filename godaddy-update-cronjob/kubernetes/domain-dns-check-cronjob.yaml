@@ -16,7 +16,7 @@ spec:
             - name: GODADDY_MAINDOMAIN
               value: datafortress.cloud # enter your main domain here
             - name: GODADDY_SUBDOMAINS
-              value: k8, # enter the subdomains you plan on updating here
+              value: storj,storj-dash,tradingbot # enter the subdomains you plan on updating here
             - name: GODADDY_PUBLIC_KEY
               valueFrom:
                 secretKeyRef:

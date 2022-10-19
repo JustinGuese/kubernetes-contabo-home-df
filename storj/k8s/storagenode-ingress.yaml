@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-wordpress-easycloudhost
-  namespace: wordpress-easycloudhost
+  name: storj-dashboard
+  namespace: storj
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -14,17 +14,29 @@ metadata:
 spec:
   tls:
   - hosts:
-    - shop.easycloudhost.de
+    - storj-dash.datafortress.cloud
+    - storj.datafortress.cloud
     secretName: tls-secret
   rules:
-  - host: "shop.easycloudhost.de"
-  # - host: shop.datafortress.duckdns.org
+  - host: 
+    - "storj-dash.datafortress.cloud"
     http:
       paths:
         - path: "/" # wildcard for now
           pathType: Prefix
           backend:
             service:
-              name: easycloudhost-shop-service
+              name: storagenode
               port:
-                number: 80
+                number: 14002
+  - host: 
+    - "storj.datafortress.cloud"
+    http:
+      paths:
+        - path: "/" # wildcard for now
+          pathType: Prefix
+          backend:
+            service:
+              name: storagenode-nodeport
+              port:
+                number: 28967

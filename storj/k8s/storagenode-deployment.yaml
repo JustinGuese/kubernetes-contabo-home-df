@@ -20,13 +20,13 @@ spec:
       containers:
         - env:
             - name: ADDRESS
-              value: 195.88.87.230:31008
+              value: 93.104.55.161:31008
             - name: BANDWIDTH
               value: 30TB
             - name: EMAIL
               value: guese.justin@gmail.com
             - name: STORAGE
-              value: 50GB
+              value: 2TB
             - name: STORJ_LOG_LEVEL
               value: info
             - name: WALLET
@@ -35,6 +35,13 @@ spec:
           name: storagenode
           ports:
             - containerPort: 28967
+              protocol: TCP
+            - containerPort: 28967
+              protocol: UDP
+            - containerPort: 14002
+              protocol: TCP
+            - containerPort: 14002
+              protocol: UDP
           resources: {}
           volumeMounts:
             - mountPath: /app/identity
@@ -42,19 +49,19 @@ spec:
               readOnly: true
             - mountPath: /app/config
               name: storj-config
-      imagePullPolicy: Always
-      initContainers:
-        - name: storj-init
-          image: storjlabs/storagenode:latest
-          env:
-            - name: SETUP
-              value: "true"
-          volumeMounts:
-            - mountPath: /app/identity
-              name: storj-identity
-              readOnly: true
-            - mountPath: /app/config
-              name: storj-config
+          imagePullPolicy: Always
+      # initContainers:
+      #   - name: storj-init
+      #     image: storjlabs/storagenode:latest
+      #     env:
+      #       - name: SETUP
+      #         value: "true"
+      #     volumeMounts:
+      #       - mountPath: /app/identity
+      #         name: storj-identity
+      #         readOnly: true
+      #       - mountPath: /app/config
+      #         name: storj-config
       restartPolicy: Always
       volumes:
         - name: storj-identity
@@ -69,10 +76,37 @@ spec:
                 path: ca.cert
               - key: ca.key
                 path: ca.key
+              - key: ca.1666105118.cert
+                path: ca.1666105118.cert
+              - key: identity.1666105118.cert
+                path: identity.1666105118.cert
         - name: storj-config
           hostPath:
-            path: /root/storjdata
+            path: /mnt/hdd/storj
             type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  labels:
+    service: storagenode
+  name: storagenode-nodeport
+  namespace: storj
+spec:
+  type: NodePort
+  ports:
+    - name: "storj-tcp"
+      port: 28967
+      targetPort: 28967
+      nodePort: 31008
+    - name: "storj-udp"
+      port: 28967
+      targetPort: 28967
+      nodePort: 31008
+      protocol: UDP
+  selector:
+    service: storagenode
 ---
 apiVersion: v1
 kind: Service
@@ -83,11 +117,11 @@ metadata:
   name: storagenode
   namespace: storj
 spec:
-  type: NodePort
+  # type: NodePort
   ports:
-    - name: "storj"
-      port: 28967
-      targetPort: 28967
-      nodePort: 31008
+    - name: "storj-dashboard"
+      port: 14002
+      targetPort: 14002
+      # nodePort: 31008
   selector:
     service: storagenode
