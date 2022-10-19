@@ -17,7 +17,8 @@ spec:
     - shop.easycloudhost.de
     secretName: tls-secret
   rules:
-  - host: "shop.easycloudhost.de"
+  - host: "shop.k8.easycloudhost.de"
+  # - host: shop.datafortress.duckdns.org
     http:
       paths:
         - path: "/" # wildcard for now

@@ -35,6 +35,17 @@ helm install \
 kubectl apply -f ingress/df-clusterissuer.yaml
 ```
 
+
+##### cert manager duckdns setup
+
+helm install cert-manager-webhook-duckdns \
+            --namespace cert-manager \
+            --set duckdns.token='b7ad3edf-a3d9-4bf6-af06-96d0b8961646' \
+            --set clusterIssuer.production.create=true \
+            --set clusterIssuer.email=guese.justin@gmail.com \
+            --set logLevel=2 \
+            ebrianne.github.io/cert-manager-webhook-duckdns 
+
 ### 3. argo ci cd
 
 ```
@@ -91,17 +102,6 @@ velero install \
 --secret-file ./cloudcreds \
 --backup-location-config region=eu-central-003,s3ForcePathStyle="true",s3Url=https://s3.eu-central-003.backblazeb2.com,region=eu-central-003 \
 --snapshot-location-config region=eu-central-003
-
-velero install \
-  --provider velero.io/aws \
-  --bucket dfhome-kubernetes-backups-velero \
-  --plugins velero/velero-plugin-for-aws:v1.4.0 \
-  --backup-location-config region=eu-central-1 \
-  --use-volume-snapshots=false \
-  --use-restic \
-  --backup-location-config \
-      s3Url=https://s3.eu-central-003.backblazeb2.com,region=eu-central-003 \
-  --secret-file ./cloudcreds
 
 # microk8s specific
 kubectl -n velero patch daemonset.apps/restic --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/volumes/0/hostPath/path", "value":"/var/snap/microk8s/common/var/lib/kubelet/pods"}]' 

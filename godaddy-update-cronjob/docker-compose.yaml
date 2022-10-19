@@ -1,0 +1,16 @@
+version: "3"
+services:
+  godaddyupdater:
+    build: .
+    image: guestros/docker-godaddy-dns-updater:latest
+    # restart: never
+    env_file:
+      - .env
+    environment:
+      - "GODADDY_SUBDOMAINS=covidapp-api,covidapp-obj,nextcloud"
+      - "GODADDY_MAINDOMAIN=datafortress.cloud"
+    volumes:
+      - godaddyupdater:/app/persistent/
+
+volumes:
+  godaddyupdater:

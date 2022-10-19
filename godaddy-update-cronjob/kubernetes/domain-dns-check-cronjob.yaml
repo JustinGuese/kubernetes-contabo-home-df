@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: domain-dns-check-godaddy
+spec:
+  schedule: "*/5 * * * *" # every hour
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: domain-dns-check-godaddy
+            image: guestros/docker-godaddy-dns-updater:latest
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: GODADDY_MAINDOMAIN
+              value: datafortress.cloud # enter your main domain here
+            - name: GODADDY_SUBDOMAINS
+              value: k8, # enter the subdomains you plan on updating here
+            - name: GODADDY_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: godaddy
+                  key: GODADDY_PUBLIC_KEY
+            - name: GODADDY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: godaddy
+                  key: GODADDY_SECRET
+            # - name: CLOUDFLARE_EMAIL
+            #   value: guese.justin@gmail.com
+            # - name: CLOUDFLARE_TOKEN
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: godaddy
+            #       key: CLOUDFLARE_TOKEN
+            # - name: CLOUDFLARE_ZONES
+            #   # enter cloudflare zones you want to update
+            #   value: 7c6712e2d07a5ec8fde742b838ad2b28
+            - name: EMAIL_USERNAME
+              value: "info@datafortress.cloud"
+            - name: EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: godaddy
+                  key: EMAIL_PASSWORD
+          restartPolicy: OnFailure
+          volumes:
+          - name: domain-dns-check-godaddy-volume
+            persistentVolumeClaim:
+              claimName: domain-dns-check-godaddy-volume-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: domain-dns-check-godaddy-volume-claim
+  name: domain-dns-check-godaddy-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Mi
+status: {}
