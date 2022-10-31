@@ -135,7 +135,7 @@ annotations:
 
 schedule:
 
-`velero create schedule bidaily-backup --schedule="0 2 * * */2" --exclude-namespaces openebs,velero,kube-system`
+`velero create schedule weekly-backup --schedule="0 2 * * */7" --exclude-namespaces openebs,velero,kube-system`
 
 velero schedule create fullbackup --schedule="1 2 * * */3" # alle 7 tache
 
