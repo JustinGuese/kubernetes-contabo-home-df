@@ -100,6 +100,17 @@ microk8s enable openebs
 kubectl patch storageclass openebs-hostpath -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
 ```
+# storj
+velero install \
+--use-restic \
+--provider aws \
+--plugins velero/velero-plugin-for-aws \
+--bucket df-k8s-backup \
+--secret-file ./cloudcreds \
+--backup-location-config region=eu1,s3ForcePathStyle="true",s3Url=https://gateway.storjshare.io
+
+
+# old backböaze
 velero install \
 --use-restic \
 --provider aws \
