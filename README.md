@@ -100,22 +100,6 @@ microk8s enable openebs
 kubectl patch storageclass openebs-hostpath -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
 ```
-# velero new
-helm install velero vmware-tanzu/velero \
---namespace velero \
---create-namespace \
---set-file credentials.secretContents.cloud=/home/jguese/code/kubernetes-contabo-home-df/cloudcreds \
---set configuration.provider=aws \
---set configuration.backupStorageLocation.bucket=df-k8s-backup \
---set configuration.backupStorageLocation.region=eu1 \
---set configuration.backupStorageLocation.s3ForcePathStyle="true" \
---set configuration.backupStorageLocation.s3Url=https://gateway.storjshare.io \
---set initContainers[0].name=velero-plugin-for-aws \
---set initContainers[0].image=velero/velero-plugin-for-aws:latest \
---set initContainers[0].volumeMounts[0].mountPath=/target \
---set initContainers[0].volumeMounts[0].name=plugins \
-
-
 
 # storj old
 velero install \
@@ -155,6 +139,9 @@ schedule:
 `velero create schedule weekly-backup --schedule="0 2 * * */7" --exclude-namespaces openebs,velero,kube-system`
 
 velero schedule create fullbackup --schedule="1 2 * * */3" # alle 7 tache
+
+for myopiagraph
+velero schedule create myopiabackup --schedule="1 2 * * *" --include-namespaces myopia --ttl 360h
 
 To show all stored backups list (name, status, creation and expiration date)
 $ velero get backups
