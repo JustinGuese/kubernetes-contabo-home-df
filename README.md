@@ -42,16 +42,6 @@ kubectl apply -f ingress/df-clusterissuer.yaml
 ```
 
 
-##### cert manager duckdns setup
-
-helm install cert-manager-webhook-duckdns \
-            --namespace cert-manager \
-            --set duckdns.token='b7ad3edf-a3d9-4bf6-af06-96d0b8961646' \
-            --set clusterIssuer.production.create=true \
-            --set clusterIssuer.email=guese.justin@gmail.com \
-            --set logLevel=2 \
-            ebrianne.github.io/cert-manager-webhook-duckdns 
-
 ### 3. argo ci cd
 
 ```
@@ -209,3 +199,15 @@ sudo ufw allow 4789/udp
 
 sudo ufw enable
 ```
+
+# high availability split
+
+datafortress.duckdns.org
+
+:25000/218fcc207c307b431cc20943496be18e/da92c056aab7
+
+microk8s join datafortress.duckdns.org:25000/218fcc207c307b431cc20943496be18e/da92c056aab7
+
+need to set hostname in local dfhome to remote ip
+nano /etc/hosts 
+116.203.28.167 dfcloudk8s
