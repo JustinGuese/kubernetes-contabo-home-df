@@ -89,6 +89,8 @@ microk8s enable openebs
 
 kubectl patch storageclass openebs-hostpath -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
+kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+
 ```
 
 # storj old
@@ -116,8 +118,10 @@ kubectl -n velero patch daemonset.apps/restic --type='json' -p='[{"op": "replace
 ```
   <!-- --snapshot-location-config region=eu-central-1 \ -->
 
+
+# velero specific
 ```
-kubectl -n velero patch daemonset.apps/restic --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/volumes/0/hostPath/path", "value":"/var/snap/microk8s/common/var/lib/kubelet/pods"}]'
+kubectl -n velero patch daemonset.apps/restic --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/volumes/0/hostPath/path", "value":"/var/lib/rancher/k3s/agent/kubelet/pods"}]'
 ```
 
 make annotations for volumes in deployments
@@ -128,7 +132,7 @@ schedule:
 
 `velero create schedule weekly-backup --schedule="0 2 * * */7" --exclude-namespaces openebs,velero,kube-system`
 
-velero schedule create fullbackup --schedule="1 2 * * */3" # alle 7 tache
+velero schedule create fullbackup --schedule="1 2 * * */3" # alle 3 tache
 
 for myopiagraph
 velero schedule create myopiabackup --schedule="1 2 * * *" --include-namespaces myopia --ttl 360h
@@ -201,6 +205,16 @@ sudo ufw enable
 ```
 
 # high availability split
+
+curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server --cluster-init
+curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server --server https://datafortress.duckdns.org:6443
+
+
+
+
+---
+
+old microk8s:
 
 datafortress.duckdns.org
 
