@@ -15,6 +15,13 @@ ssh root@195.88.87.230 -p 223
 
 https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
 
+# nginx install
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
+  --create-namespace \
+
 ## install
 
 ```
