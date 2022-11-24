@@ -21,17 +21,23 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
   --namespace ingress-nginx \
   --create-namespace \
+  --set controller.metrics.enabled=true \
+  --set-string controller.podAnnotations."prometheus\.io/scrape"="true" \
+  --set-string controller.podAnnotations."prometheus\.io/port"="10254" \
+  --set controller.service.type=LoadBalancer \
+  --set controller.service.ports.http=80 \
+  --set service.annotations."metallb\.universe\.tf/address-pool"=singlenode \
+  --set controller.service.ports.https=443 
 
-## install
+helm repo add metallb https://metallb.github.io/metallb
+helm install metallb metallb/metallb --create-namespace --namespace metallb-system
+kubectl apply -f metallb/metallb.yaml
 
-```
-sudo snap install microk8s --classic --channel=latest/stable
-microk8s start
-microk8s enable dns ingress metrics-server rbac hostpath-storage
-microk8s config show
-```
+### optional promehtues logging nginx setup
 
-edit kubeconfig acccordingly
+kubectl apply --kustomize github.com/kubernetes/ingress-nginx/deploy/prometheus/
+
+kubectl apply --kustomize github.com/kubernetes/ingress-nginx/deploy/grafana/
 
 
 
@@ -47,6 +53,17 @@ helm install \
         --set installCRDs=true
 kubectl apply -f ingress/df-clusterissuer.yaml
 ```
+
+## install
+
+```
+sudo snap install microk8s --classic --channel=latest/stable
+microk8s start
+microk8s enable dns ingress metrics-server rbac hostpath-storage
+microk8s config show
+```
+
+edit kubeconfig acccordingly
 
 
 ### 3. argo ci cd

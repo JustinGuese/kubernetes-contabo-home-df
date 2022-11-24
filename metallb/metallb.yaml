@@ -1,0 +1,8 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: singlenode
+  namespace: metallb-system
+spec:
+  addresses:
+  - 195.88.87.230-195.88.87.230
