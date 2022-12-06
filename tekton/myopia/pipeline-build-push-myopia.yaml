@@ -1,0 +1,54 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: clone-build-push
+spec:
+  description: | 
+    This pipeline clones a git repo, then builds the repo and pushes it
+  params:
+  - name: repo-url
+    type: string
+    description: The git repo URL to clone from.
+  - name: image-reference
+    type: string
+    description: The image reference to push the image to.
+  - name: branch
+    type: string
+    description: The branch to clone from.
+    default: staging
+  workspaces:
+  - name: shared-data
+    description: | 
+      This workspace contains the cloned repo files, so they can be read by the
+      next task.
+  - name: git-credentials
+    description: My ssh credentials
+  - name: docker-credentials
+    description: docker creds, containing a .docker/config.json file
+  tasks:
+  - name: fetch-source
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    - name: ssh-directory
+      workspace: git-credentials
+    params:
+    - name: url
+      value: $(params.repo-url)
+    - name: revision
+      value: $(params.branch)
+
+  - name: build-push
+    runAfter: ["fetch-source"]
+    taskRef:
+      name: kaniko
+    workspaces:
+    - name: source
+      workspace: shared-data
+    - name: dockerconfig
+      workspace: docker-credentials
+    params:
+    - name: IMAGE
+      value: $(params.image-reference)
