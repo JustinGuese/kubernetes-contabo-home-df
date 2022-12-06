@@ -249,3 +249,15 @@ microk8s join datafortress.duckdns.org:25000/218fcc207c307b431cc20943496be18e/da
 need to set hostname in local dfhome to remote ip
 nano /etc/hosts 
 116.203.28.167 dfcloudk8s
+
+# tekton
+
+cat .kubeconfig | base64 
+or use that .kubeconfig
+
+steps:
+  - uses: actions-hub/kubectl@master
+    env:
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+    with:
+      args: get pods
