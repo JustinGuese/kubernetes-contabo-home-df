@@ -91,7 +91,8 @@ kubectl apply -f ingress/df-clusterissuer.yaml
 ```
 sudo snap install microk8s --classic --channel=latest/stable
 microk8s start
-microk8s enable dns ingress metrics-server rbac hostpath-storage
+microk8s enable dns ingress metrics-server rbac community
+microk8s enable openebs
 microk8s config show
 ```
 
