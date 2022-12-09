@@ -15,7 +15,37 @@ ssh root@195.88.87.230 -p 223
 
 https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
 
+# new k3s install
+
+1. curl -sfL https://get.k3s.io | sh -s - server --disable traefik --cluster-init 
+2. nginx with hostNetwork (baremetal)
+  - also allow ports ufw 10254 8443 (nginx health checks)
+3. cert manager + cluster issuer
+4. longhorn install `helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace`
+  - ggf. from git `helm install longhorn ./chart --namespace longhorn-system --create-namespace`
+5. patch default sc
+  - kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+4. velero install
+ - see below 
+ - velero kubelet patch `kubectl -n velero patch daemonset.apps/restic --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/volumes/0/hostPath/path", "value":"/var/lib/rancher/k3s/agent/kubelet/pods"}]'`
+ - might need storage class conversion for velero restore: `kubectl apply -f nfs-csi/velero-switch-storage-class.yaml` <- but change "old storage class" : longhorn
+5. velero restore
+  - `velero restore create --from-backup fullbackup912 --exclude-namespaces openebs,kube-system,cert-manager,velero,default,metallb-system`
+
+## joining a control pane node
+
+--disable-agent
+
 # nginx install
+
+### nginx with hostNetwork (baremetal)
+
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
+  --create-namespace \
+  --set controller.hostNetwork=true,controller.service.type="",controller.kind=DaemonSet
+
+### nginx nodeport (old?)
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
@@ -24,7 +54,7 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
   --set controller.metrics.enabled=true \
   --set-string controller.podAnnotations."prometheus\.io/scrape"="true" \
   --set-string controller.podAnnotations."prometheus\.io/port"="10254" \
-  --set controller.service.type=LoadBalancer \
+  --set controller.service.type=NodePort \
   --set controller.service.ports.http=80 \
   --set service.annotations."metallb\.universe\.tf/address-pool"=singlenode \
   --set controller.service.ports.https=443 
@@ -117,7 +147,7 @@ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storagec
 
 ```
 
-# storj old
+# storj current
 velero install \
 --use-restic \
 --provider aws \
