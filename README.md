@@ -25,6 +25,8 @@ https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
   - ggf. from git `helm install longhorn ./chart --namespace longhorn-system --create-namespace`
 5. patch default sc
   - kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+  - kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+  -  kubectl apply -f longhorn/longhorn-xfs-patch.yaml
 4. velero install
  - see below 
  - velero kubelet patch `kubectl -n velero patch daemonset.apps/restic --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/volumes/0/hostPath/path", "value":"/var/lib/rancher/k3s/agent/kubelet/pods"}]'`

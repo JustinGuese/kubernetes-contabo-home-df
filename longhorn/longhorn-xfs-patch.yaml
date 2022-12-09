@@ -1,0 +1,19 @@
+allowVolumeExpansion: true
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+  creationTimestamp: "2022-12-09T12:17:32Z"
+  name: longhorn-xfs
+  resourceVersion: "22935"
+  uid: f83c886c-c9a4-49f5-b912-51b7faac9473
+parameters:
+  dataLocality: disabled
+  fromBackup: ""
+  fsType: xfs
+  numberOfReplicas: "3"
+  staleReplicaTimeout: "30"
+provisioner: driver.longhorn.io
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
