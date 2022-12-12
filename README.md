@@ -153,11 +153,11 @@ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storagec
 
 ```
 # wasabi current
+# --use-restic \ # restic does not work with longhorn
 velero install \
---use-restic \
 --provider aws \
 --plugins velero/velero-plugin-for-aws \
---bucket dfhome-velero \
+--bucket dfcontabo-velero \
 --secret-file ./cloudcreds \
 --backup-location-config region=eu-central-2,s3ForcePathStyle="true",s3Url=https://s3.eu-central-2.wasabisys.com
 

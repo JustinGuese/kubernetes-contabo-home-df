@@ -59,6 +59,13 @@ spec:
           volumeMounts:
             - mountPath: /usr/share/kibana/data
               name: kibana-pv
+      initContainers:
+        - name: init-chown-data
+          image: busybox
+          command: ["chown", "-R", "1000:1000", "/usr/share/kibana/data"]
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: kibana-pv
       restartPolicy: Always
       volumes:
         - name: kibana-pv
