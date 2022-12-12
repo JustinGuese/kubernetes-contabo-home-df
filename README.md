@@ -45,7 +45,10 @@ https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
   --namespace ingress-nginx \
   --create-namespace \
-  --set controller.hostNetwork=true,controller.service.type="",controller.kind=DaemonSet
+  --set controller.hostNetwork=true,controller.service.type="",controller.kind=DaemonSet \
+  --set controller.metrics.enabled=true \
+  --set-string controller.podAnnotations."prometheus\.io/scrape"="true" \
+  --set-string controller.podAnnotations."prometheus\.io/port"="10254" 
 
 ### nginx nodeport (old?)
 
@@ -149,6 +152,14 @@ kubectl patch storageclass openebs-hostpath -p '{"metadata": {"annotations":{"st
 kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 
 ```
+# wasabi current
+velero install \
+--use-restic \
+--provider aws \
+--plugins velero/velero-plugin-for-aws \
+--bucket dfhome-velero \
+--secret-file ./cloudcreds \
+--backup-location-config region=eu-central-2,s3ForcePathStyle="true",s3Url=https://s3.eu-central-2.wasabisys.com
 
 # storj current
 velero install \
