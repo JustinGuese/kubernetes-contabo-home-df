@@ -64,7 +64,7 @@ spec:
           image: busybox
           command: ["chown", "-R", "1000:1000", "/usr/share/kibana/data"]
           volumeMounts:
-            - mountPath: /usr/share/elasticsearch/data
+            - mountPath: /usr/share/kibana/data
               name: kibana-pv
       restartPolicy: Always
       volumes:
