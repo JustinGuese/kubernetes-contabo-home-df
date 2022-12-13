@@ -42,13 +42,13 @@ spec:
             - name: WORDPRESS_DB_HOST
               value: mariadb-service.wordpressdb.svc.cluster.local
             - name: WORDPRESS_DB_USER
-              value: easycloudhost
+              value: root
             - name: WORDPRESS_DB_NAME
-              value: wordpress_easycloudhost
+              value: wordpress
             - name: WORDPRESS_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: easycloudhostwppw 
+                  name: wordpressmariadbpw  
                   key: MARIADB_PASSWORD
           image: wordpress:latest
           imagePullPolicy: Always
