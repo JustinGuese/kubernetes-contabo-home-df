@@ -88,19 +88,19 @@ spec:
   selector:
     app: kibana-app
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: kibana
-  name: kibana-service
-  namespace: elk
-spec:
-  type: NodePort
-  ports:
-    - name: "kibana-service"
-      port: 5601
-      targetPort: 5601
-      nodePort: 30005
-  selector:
-    app: kibana-app
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   labels:
+#     app: kibana
+#   name: kibana-service
+#   namespace: elk
+# spec:
+#   type: NodePort
+#   ports:
+#     - name: "kibana-service"
+#       port: 5601
+#       targetPort: 5601
+#       # nodePort: 30005
+#   selector:
+#     app: kibana-app

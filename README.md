@@ -15,6 +15,7 @@ https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
 # new k3s install
 
 1. curl -sfL https://get.k3s.io | sh -s - server --disable traefik --cluster-init 
+2. cat /etc/rancher/k3s/k3s.yaml # and insert it into kubeconfig
 2. nginx with hostNetwork (baremetal)
   - also allow ports ufw 10254 8443 (nginx health checks)
 3. cert manager + cluster issuer
@@ -24,6 +25,11 @@ https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
   - kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
   - kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
   -  kubectl apply -f longhorn/longhorn-xfs-patch.yaml
+  - kubectl create secret generic --from-file cloudcreds aws-secret -n longhorn-system
+
+
+
+
 4. k10s backup
   - helm install k10 kasten/k10 --namespace=kasten-io --create-namespace
   - kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-4.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
@@ -32,6 +38,7 @@ https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
   - kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-4.0/deploy/kubernetes/snapshot-controller/rbac-snapshot-controller.yaml 
   - kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-4.0/deploy/kubernetes/snapshot-controller/setup-snapshot-controller.yaml 
   - kubectl apply -f longhorn/longhorn-snapshot-sc.yaml
+  - kubectl apply -f longhorn/longhorn-nodeport-fix.yaml
 
 4. velero install
  - see below 
@@ -312,3 +319,10 @@ steps:
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
     with:
       args: get pods
+
+
+# caprover experiemnt
+
+https://caprover.com/docs/get-started.html
+
+docker run --restart=always -p 80:80 -p 443:443 -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock -v /captain:/captain caprover/caprover
