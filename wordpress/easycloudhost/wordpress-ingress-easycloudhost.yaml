@@ -12,6 +12,7 @@ metadata:
     #   more_set_headers "X-Robots-Tag: noindex, nofollow";
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
     - shop.easycloudhost.de

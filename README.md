@@ -2,6 +2,7 @@
 
 advin
 root@204.10.194.50
+2602:fb54:143::148	
 
 IP: 195.88.87.230
 2a02:c206:3009:9907::1
@@ -25,7 +26,13 @@ https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
   - kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
   - kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
   -  kubectl apply -f longhorn/longhorn-xfs-patch.yaml
-  - kubectl create secret generic --from-file cloudcreds aws-secret -n longhorn-system
+6. velero install as usual, including k3s patch kubelet
+  - also plugin for longhorn
+7. VPN setup
+  - 10.43.0.0/16
+  - helm install tailscale-subnet-router mvisonneau/tailscale-relay --set config.authKey=tskey-auth-KEY --set config.variables.TAILSCALE_ADVERTISE_ROUTES=10.43.0.0/16 -n openvpn --create-namespace
+
+
 
 
 
@@ -214,7 +221,7 @@ schedule:
 
 `velero create schedule weekly-backup --schedule="0 2 * * */7" --exclude-namespaces openebs,velero,kube-system`
 
-velero schedule create fullbackup --schedule="1 2 * * */3" # alle 3 tache
+velero schedule create fullbackup --schedule="1 2 * * 3" # every wednesday
 
 for myopiagraph
 velero schedule create myopiabackup --schedule="1 2 * * *" --include-namespaces myopia --ttl 360h
