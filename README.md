@@ -333,3 +333,6 @@ steps:
 https://caprover.com/docs/get-started.html
 
 docker run --restart=always -p 80:80 -p 443:443 -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock -v /captain:/captain caprover/caprover
+
+# filebeat logging
+
