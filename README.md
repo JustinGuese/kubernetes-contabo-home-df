@@ -1,10 +1,7 @@
 # kubernetes-contabo-home-df
 
-93.104.55.161
-2001:a61:506b:c101:d07f:9f45:c12e:2092
-
-
-
+advin
+root@204.10.194.50
 
 IP: 195.88.87.230
 2a02:c206:3009:9907::1
@@ -27,6 +24,15 @@ https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
   - kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
   - kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
   -  kubectl apply -f longhorn/longhorn-xfs-patch.yaml
+4. k10s backup
+  - helm install k10 kasten/k10 --namespace=kasten-io --create-namespace
+  - kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-4.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
+  - kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-4.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
+  - kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-4.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
+  - kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-4.0/deploy/kubernetes/snapshot-controller/rbac-snapshot-controller.yaml 
+  - kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-4.0/deploy/kubernetes/snapshot-controller/setup-snapshot-controller.yaml 
+  - kubectl apply -f longhorn/longhorn-snapshot-sc.yaml
+
 4. velero install
  - see below 
  - velero kubelet patch `kubectl -n velero patch daemonset.apps/restic --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/volumes/0/hostPath/path", "value":"/var/lib/rancher/k3s/agent/kubelet/pods"}]'`
@@ -155,6 +161,7 @@ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storagec
 # wasabi current
 # --use-restic \ # restic does not work with longhorn
 velero install \
+--use-restic \
 --provider aws \
 --plugins velero/velero-plugin-for-aws \
 --bucket dfcontabo-velero \
@@ -167,7 +174,7 @@ velero install \
 --provider aws \
 --plugins velero/velero-plugin-for-aws \
 --bucket df-k8s-backup \
---secret-file ./cloudcreds \
+--secret-file ./cloudcreds-storj \
 --backup-location-config region=eu1,s3ForcePathStyle="true",s3Url=https://gateway.storjshare.io
 
 
