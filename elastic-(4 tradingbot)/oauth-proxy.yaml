@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: oauth2-proxy-df-internal
+  name: oauth2-proxy-df-internal
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: oauth2-proxy-df-internal
+  template:
+    metadata:
+      labels:
+        k8s-app: oauth2-proxy-df-internal
+    spec:
+      containers:
+      - args:
+        - --provider=oidc
+        - --oidc-issuer-url=https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_n2sfAgN5P
+        - --provider-display-name=cognito_auth
+        - --email-domain=*
+        # - --upstream=file:///dev/null
+        - --http-address=0.0.0.0:4180
+        - --oidc-jwks-url=https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_n2sfAgN5P/.well-known/jwks.json
+        # - --oidc-issuer-url=https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_n2sfAgN5P
+        - --cookie-secure=true
+        # - --whitelist-domain=.datafortress.cloud
+        - --cookie-domain=datafortress.cloud
+        - --skip-provider-button=True
+        - --scope=openid
+        - --session-cookie-minimal
+        # Register a new application
+        # https://github.com/settings/applications/new
+        env:
+        - name: OAUTH2_PROXY_CLIENT_ID
+          value: bihc44nqll6rrhcmrobd3uf78
+        - name: OAUTH2_PROXY_CLIENT_SECRET
+          value: kaqg1a6od8a20qj46ujcgo8h75kebp5hmp6v5a39mub7l2ltco3
+        # docker run -ti --rm python:3-alpine python -c 'import secrets,base64; print(base64.b64encode(base64.b64encode(secrets.token_bytes(16))));'
+        - name: OAUTH2_PROXY_COOKIE_SECRET
+          value: bC_z_aM5EESfogxRCLoFOYnLb_rdk9nuOc7xuEN-Ubo=
+        image: quay.io/oauth2-proxy/oauth2-proxy:latest
+        imagePullPolicy: Always
+        name: oauth2-proxy-df-internal
+        ports:
+        - containerPort: 4180
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s-app: oauth2-proxy-df-internal
+  name: oauth2-proxy-df-internal
+  namespace: kube-system
+spec:
+  ports:
+  - name: http
+    port: 4180
+    protocol: TCP
+    targetPort: 4180
+  selector:
+    k8s-app: oauth2-proxy-df-internal

@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-payment
+  namespace: elk
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # # nginx.ingress.kubernetes.io/enable-cors: "true"
+    # # nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    # # nginx.ingress.kubernetes.io/configuration-snippet: |
+    # #   more_set_headers "X-Robots-Tag: noindex, nofollow";
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # type of authentication
+    # nginx.ingress.kubernetes.io/auth-type: basic
+    # # name of the secret that contains the user/password definitions
+    # nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    # # message to display with an appropriate context why the authentication is required
+    # nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - write info@datafortress.cloud if you want access'
+    nginx.ingress.kubernetes.io/auth-url: "https://tradingkibana.datafortress.cloud/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://tradingkibana.datafortress.cloud/oauth2/start?rd=$escaped_request_uri"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "8k"
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    # - tradingkibana.datafortress.cloud
+    - tradingkibana.datafortress.cloud
+    secretName: tls-secret
+  rules:
+  - host: tradingkibana.datafortress.cloud # tradingkibana.datafortress.cloud
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kibana-service 
+            port:
+              number: 5601
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-elk
+  namespace: kube-system
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  # annotations:
+  #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: tradingkibana.datafortress.cloud
+    http:
+      paths:
+      - path: /oauth2
+        pathType: Prefix
+        backend:
+          service:
+            name: oauth2-proxy-df-internal
+            port:
+              number: 4180
+  tls:
+  - hosts:
+    - tradingkibana.datafortress.cloud
+    secretName: tls-secret

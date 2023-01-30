@@ -42,7 +42,7 @@ spec:
               value: http://elasticsearch-service:9200
             - name: ELASTICSEARCH_URL
               value: http://elasticsearch-service:9200
-          image: docker.elastic.co/kibana/kibana:8.5.1
+          image: docker.elastic.co/kibana/kibana:8.6.1
           imagePullPolicy: Always
           name: kibana-app
           ports:

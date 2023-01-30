@@ -46,7 +46,7 @@ spec:
               value: "-Xms512m -Xmx512m"
             - name: bootstrap.memory_lock
               value: "true"
-          image: docker.elastic.co/elasticsearch/elasticsearch:8.5.1
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.6.1
           imagePullPolicy: Always
           name: elasticsearch-app
           ports:
