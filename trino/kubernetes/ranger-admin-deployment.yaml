@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ranger-admin
+  name: ranger-admin
+  namespace: trino-ranger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ranger-admin
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (a9d05d509)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/trino-ranger-demo: "true"
+        io.kompose.service: ranger-admin
+    spec:
+      containers:
+        - image: guestros/ranger:latest
+          name: ranger-admin
+          ports:
+            - containerPort: 6080
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: "10m"
+              memory: "10m"
+      hostname: ranger-admin
+      restartPolicy: Always
+status: {}

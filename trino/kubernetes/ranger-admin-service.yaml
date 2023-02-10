@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ranger-admin
+  name: ranger-admin
+  namespace: trino-ranger
+spec:
+  ports:
+    - name: "6080"
+      port: 6080
+      targetPort: 6080
+  selector:
+    io.kompose.service: ranger-admin
+status:
+  loadBalancer: {}

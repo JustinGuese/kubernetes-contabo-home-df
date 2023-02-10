@@ -1,0 +1,3 @@
+FROM trinodb/trino:384
+COPY ./trino-ranger-demo-main/trino/ /root/
+ENTRYPOINT ["/root/docker-entrypoint.sh"]

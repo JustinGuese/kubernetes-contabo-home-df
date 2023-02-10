@@ -1,0 +1,3 @@
+FROM aakashnand/trino-ranger-demo:v3.0
+COPY ./trino-ranger-demo-main/ranger-admin/ /root/
+ENTRYPOINT ["/root/docker-entrypoint.sh"]

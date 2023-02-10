@@ -1,0 +1,69 @@
+version: "3.7"
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+    container_name: es01
+    hostname: es01
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+    ports:
+      - 9200:9200
+    networks:
+      - trino-ranger-demo
+    volumes:
+    - es-data:/usr/share/elasticsearch/data
+
+  postgresql:
+    image: postgres:13
+    container_name: psql01
+    hostname: psql01
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - 5432:5432
+    networks:
+      - trino-ranger-demo
+    volumes:
+    - pg-data:/var/lib/postgresql/data
+
+  ranger-admin:
+    image: guestros/ranger:latest
+    build:
+      dockerfile: Dockerfile.ranger
+    container_name: ranger-admin
+    hostname: ranger-admin
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 6G
+        reservations:
+          cpus: '1'
+          memory: 4G
+    ports:
+      - 6080:6080
+    networks:
+      - trino-ranger-demo
+
+  trino:
+    image: guestros/trino:latest
+    build:
+      dockerfile: Dockerfile.trino
+    hostname: my-localhost-trino
+    user: root
+    container_name: my-localhost-trino
+    networks:
+      - trino-ranger-demo
+    ports:
+      - 8081:8080
+
+networks:
+  trino-ranger-demo:
+    driver: bridge
+
+volumes:
+  es-data:
+  pg-data:
+  # ranger-es-data:
+  # ranger-pg-data:

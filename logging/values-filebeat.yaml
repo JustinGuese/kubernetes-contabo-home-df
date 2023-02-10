@@ -18,3 +18,22 @@ daemonset:
         ssl.enabled: false
         protocol: "http"
         ssl.verification_mode: none
+
+
+      filebeat.autodiscover:
+        providers:
+          - type: kubernetes
+            templates:
+              - condition:
+                  equals:
+                    kubernetes.container.name: "nginx-ingress-controller"
+                config:
+                - module: nginx
+                  access:
+                    enabled: true
+                    input:
+                      type: container
+                      paths:
+                      - /var/lib/docker/containers/${data.kubernetes.container.id}/*.log
+      output.elasticsearch:
+        hosts: 'elasticsearch-service:9200'

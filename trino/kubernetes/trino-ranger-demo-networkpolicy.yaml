@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: trino-ranger-demo
+  namespace: trino-ranger
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              io.kompose.network/trino-ranger-demo: "true"
+  podSelector:
+    matchLabels:
+      io.kompose.network/trino-ranger-demo: "true"
